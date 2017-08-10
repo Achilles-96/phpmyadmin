@@ -54,6 +54,14 @@ if (getcwd() == dirname(__FILE__)) {
     die('Attack stopped');
 }
 
+/*
+ * If config is writable, redirect (force) user to set password
+ */
+$source_dir = realpath(dirname(__FILE__) . '/..');
+if (!defined('PMA_SETUP') && (is_writable($source_dir) || (is_writable($source_dir . '/config.inc.php')))) {
+    header("Location: setup");
+}
+
 /**
  * Minimum PHP version; can't call Core::fatalError() which uses a
  * PHP 5 function, so cannot easily localize this message.

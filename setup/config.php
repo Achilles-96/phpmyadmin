@@ -14,6 +14,7 @@ use PhpMyAdmin\Response;
 /**
  * Core libraries.
  */
+define('PMA_PATH_TO_BASEDIR', realpath(dirname(__FILE__) . '/..'));
 require './lib/common.inc.php';
 
 require './libraries/config/setup.forms.php';
@@ -26,6 +27,16 @@ $response = Response::getInstance();
 
 if (isset($_POST['eol'])) {
     $_SESSION['eol'] = ($_POST['eol'] == 'unix') ? 'unix' : 'win';
+}
+if (isset($_POST['apply_config'])) {
+    $config_file_name = PMA_PATH_TO_BASEDIR . DIRECTORY_SEPARATOR . CONFIG_FILE;
+    if (is_writable(PMA_PATH_TO_BASEDIR) || is_writable($config_file_name)) {
+        $config_file = fopen($config_file_name, "w") or die("Unable to open config file!");
+        $content = $_POST['textconfig'];
+        fwrite($config_file, $content);
+        fclose($config_file);
+        $response->addHTML(PhpMyAdmin\Message::success(__('Updated config successfully')));
+    }
 }
 
 if (Core::ifSetOr($_POST['submit_clear'], '')) {

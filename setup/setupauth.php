@@ -1,4 +1,5 @@
 <?php
+
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Front controller for setup script
@@ -6,44 +7,28 @@
  * @package PhpMyAdmin-Setup
  * @license https://www.gnu.org/licenses/gpl.html GNU GPL 2.0
  */
-
-use PhpMyAdmin\Core;
-
-/**
- * Core libraries.
- */
 define('PMA_PATH_TO_BASEDIR', realpath(dirname(__FILE__) . '/..'));
 
 require './lib/common.inc.php';
 
 if (@file_exists(CONFIG_FILE) && ! $cfg['DBG']['demo']) {
     if (!(isset($cfg['SetupPassword']) && $cfg['SetupPassword'] !== '')) {
-        echo 'Please set password';
+        header('Location: index.php');
         exit;
     }
-    if (!(isset($_SESSION['SetupAuthenticated']) && $_SESSION['SetupAuthenticated'])) {
-        header('Location: setupauth.php');
+    if (isset($_POST['SetupPassword']) && $_POST['SetupPassword'] === $cfg['SetupPassword']) {
+        $_SESSION['SetupAuthenticated'] = true;
+        header('Location: index.php');
         exit;
     }
+} else {
+    header('Location: index.php');
+    exit;
 }
-
-$page = Core::isValid($_GET['page'], 'scalar') ? $_GET['page'] : null;
-$page = preg_replace('/[^a-z]/', '', $page);
-if ($page === '') {
-    $page = 'index';
-}
-if (!@file_exists("./setup/frames/$page.inc.php")) {
-    // it will happen only when entering URL by hand, we don't care for these cases
-    Core::fatalError(__('Wrong GET file attribute value'));
-}
-
-// Handle done action info
-$action_done = Core::isValid($_GET['action_done'], 'scalar') ? $_GET['action_done'] : null;
-$action_done = preg_replace('/[^a-z_]/', '', $action_done);
-
-Core::noCacheHeader();
 
 ?>
+
+
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -62,15 +47,13 @@ Core::noCacheHeader();
 </head>
 <body>
 <h1><span class="blue">php</span><span class="orange">MyAdmin</span>  setup</h1>
-<div id="menu">
-<?php
-require './setup/frames/menu.inc.php';
-?>
-</div>
 <div id="page">
-<?php
-require "./setup/frames/$page.inc.php";
-?>
+<h3> Please enter setup password </h3>
+<form method="post" action="setupauth.php">
+<input type="hidden" name="token" value="<?php echo $_SESSION[' PMA_token ']; ?>">
+<input type="password" name="SetupPassword">
+<input type="submit" value="submit">
+</form>
 </div>
 </body>
 </html>

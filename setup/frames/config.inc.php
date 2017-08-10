@@ -37,6 +37,8 @@ echo '<tr>';
 echo '<td class="lastrow" style="text-align: left">';
 echo '<input type="submit" name="submit_download" value="'
     , __('Download') , '" class="green" />';
+echo '<input type="submit" name="apply_config" value="'
+    , __('Apply configurtion'), '" class="green" />';
 echo '</td>';
 echo '</tr>';
 

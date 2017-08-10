@@ -12,6 +12,7 @@ use PhpMyAdmin\Config\ConfigFile;
  * @ignore
  */
 define('PMA_MINIMUM_COMMON', true);
+define('PMA_SETUP', true);
 chdir('..');
 
 if (!file_exists('./libraries/common.inc.php')) {
